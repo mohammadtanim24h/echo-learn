@@ -2,27 +2,31 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import Navbar from "@/components/Navbar";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
+    variable: "--font-bricolage",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Echo Learn",
-  description: "Real-time AI Teaching Platform",
+    title: "Echo Learn",
+    description: "Real-time AI Teaching Platform",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
-      <body className={`${bricolage.variable} antialiased`}>{children}</body>
-    </html>
-  );
+    return (
+        <html lang="en" className={cn("font-sans", inter.variable)}>
+            <body className={`${bricolage.variable} antialiased`}>
+                <Navbar />
+                {children}
+            </body>
+        </html>
+    );
 }
