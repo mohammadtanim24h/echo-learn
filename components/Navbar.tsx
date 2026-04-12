@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Navitems from "./Navitems";
+import { SignInButton, Show, UserButton } from "@clerk/nextjs";
 
 export default function Navbar() {
     return (
@@ -17,9 +18,17 @@ export default function Navbar() {
             </Link>
             <ul className="flex items-center gap-8">
                 <Navitems />
-                <li>
+                {/* <li>
                     <Link href="/sign-in">Sign In</Link>
-                </li>
+                </li> */}
+                <Show when="signed-out">
+                    <SignInButton>
+                        <button className="btn-signin">Sign In</button>
+                    </SignInButton>
+                </Show>
+                <Show when="signed-in">
+                    <UserButton />
+                </Show>
             </ul>
         </nav>
     );
