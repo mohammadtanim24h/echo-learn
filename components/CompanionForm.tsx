@@ -29,6 +29,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { subjects } from "@/constants";
+import { createCompanion } from "@/lib/actions/companion.actions";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, "Companion name is required."),
@@ -52,8 +54,14 @@ export default function CompanionForm() {
         },
     });
 
-    function onSubmit(data: z.infer<typeof formSchema>) {
-        console.log(data);
+    async function onSubmit(data: z.infer<typeof formSchema>) {
+        const companion = await createCompanion(data);
+        if (companion) {
+            redirect(`/companions/${companion.id}`);
+        } else {
+            console.log("Failed to create companion");
+            redirect("/");
+        }
     }
     return (
         <Card className="w-full sm:max-w-md">
