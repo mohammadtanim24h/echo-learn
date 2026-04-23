@@ -1,3 +1,4 @@
+import Companion from "@/components/Companion";
 import { getCompanion } from "@/lib/actions/companion.actions";
 import { getSubjectColor } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
@@ -48,10 +49,13 @@ export default async function CompanionSession({
                         <p className="text-lg">{topic}</p>
                     </div>
                 </div>
-                <div className="text-xl max-md:hidden">
-                    {duration} minutes
-                </div>
+                <div className="text-xl max-md:hidden">{duration} minutes</div>
             </article>
+            <Companion
+                {...companion}
+                userName={user.firstName}
+                userImage={user.imageUrl}
+            />
         </main>
     );
 }
