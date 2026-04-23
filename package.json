@@ -12,6 +12,7 @@
     "@clerk/nextjs": "^7.0.12",
     "@hookform/resolvers": "^5.2.2",
     "@jsmastery/utils": "^1.0.2",
+    "@sentry/nextjs": "^10.49.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
     "@vapi-ai/web": "^2.5.2",
