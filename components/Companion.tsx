@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import soundwaves from "@/constants/soundwaves.json";
 import { SavedMessage } from "@/types";
+import { addToSessionHistory } from "@/lib/actions/companion.actions";
 
 enum CallStatus {
     INACTIVE = "INACTIVE",
@@ -57,7 +58,10 @@ export default function Companion({
     useEffect(() => {
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
 
-        const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+        const onCallEnd = () => {
+            setCallStatus(CallStatus.FINISHED);
+            addToSessionHistory(id);
+        };
 
         const onMessage = (message: Message) => {
             if (
