@@ -98,3 +98,16 @@ export const getUserSessions = async (userId: string, limit: number = 10) => {
 
     return data.map(({ companions }) => companions);
 };
+
+export const getUserCompanions = async (userId: string) => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("companions")
+        .select()
+        .eq("author", userId);
+
+    if (error)
+        throw new Error(error.message || "Failed to fetch user companions");
+
+    return data;
+};
