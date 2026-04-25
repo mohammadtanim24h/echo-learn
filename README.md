@@ -21,10 +21,10 @@ An AI-powered learning management system that provides personalized learning exp
 ## Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org)
-- **Authentication**: [Clerk](https://clerk.com)
+- **Authentication & Billing**: [Clerk](https://clerk.com)
 - **Database**: [Supabase](https://supabase.com)
 - **Voice AI**: [Vapi AI](https://vapi.ai)
-- **UI Components**: [Radix UI](https://www.radix-ui.com) with [shadcn/ui](https://ui.shadcn.com)
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com)
 - **Language**: TypeScript
 - **Error Tracking**: [Sentry](https://sentry.io)
@@ -77,7 +77,7 @@ SENTRY_PROJECT=your_sentry_project_name
 ```
 
 4. Set up your database:
-   Run the SQL migrations in Supabase to create the necessary tables (`companions` and `session_history`).
+   Create the necessary tables in Supabase according to the Database Schema provided below (`companions` and `session_history`).
 
 5. Run the development server:
 
