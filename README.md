@@ -77,7 +77,16 @@ SENTRY_PROJECT=your_sentry_project_name
 ```
 
 4. Set up your database:
+
    Create the necessary tables in Supabase according to the Database Schema provided below (`companions` and `session_history`).
+
+   The application uses two main tables in Supabase:
+
+   - **companions**: Stores AI companion configurations
+     - `id`, `name`, `subject`, `topic`, `voice`, `style`, `duration`, `author`
+   
+   - **session_history**: Tracks user learning sessions
+     - `companion_id`, `user_id`, `created_at`
 
 5. Run the development server:
 
@@ -108,15 +117,3 @@ echo-learn/
 ├── types/                  # TypeScript type definitions
 └── public/                 # Static assets
 ```
-
-## Database Schema
-
-The application uses two main tables in Supabase:
-
-**companions**: Stores AI companion configurations
-
-- `id`, `name`, `subject`, `topic`, `voice`, `style`, `duration`, `author`
-
-**session_history**: Tracks user learning sessions
-
-- `companion_id`, `user_id`, `created_at`
