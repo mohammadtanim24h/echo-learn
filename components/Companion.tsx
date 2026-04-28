@@ -129,7 +129,7 @@ export default function Companion({
     };
 
     return (
-        <section className="flex flex-col h-[80vh]">
+        <section className="flex flex-col h-screen">
             <section className="flex gap-8 max-sm:flex-col">
                 <div className="companion-section">
                     <div
@@ -251,10 +251,9 @@ export default function Companion({
                         }
                     })}
                 </div>
-                {/* TODO: Implement transcript fade effect */}
-                {/* <div
+                <div
                     className={cn(messages.length > 1 && "transcript-fade")}
-                ></div> */}
+                ></div>
             </section>
         </section>
     );

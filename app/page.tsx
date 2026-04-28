@@ -23,7 +23,7 @@ const Page = async () => {
                     />
                 ))}
             </section>
-            <section className="home-section">
+            <section className="home-section mb-6">
                 <CompanionList
                     title="Lessons others are taking"
                     companions={recentSessions}
