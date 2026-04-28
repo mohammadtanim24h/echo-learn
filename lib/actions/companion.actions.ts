@@ -95,7 +95,7 @@ export const getUserSessions = async (userId: string, limit: number = 10) => {
     const supabase = createClient();
     const { data, error } = await supabase
         .from("session_history")
-        .select(`companions:companion_id(*)`)
+        .select(`companion_id,companions:companion_id(*)`)
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(limit);
@@ -103,7 +103,14 @@ export const getUserSessions = async (userId: string, limit: number = 10) => {
     if (error)
         throw new Error(error.message || "Failed to fetch recent sessions");
 
-    return data.map(({ companions }) => companions);
+    const uniqueCompanions = new Map();
+    for (const { companion_id, companions } of data) {
+        if (companions && !uniqueCompanions.has(companion_id)) {
+            uniqueCompanions.set(companion_id, companions);
+        }
+    }
+
+    return Array.from(uniqueCompanions.values());
 };
 
 export const getUserCompanions = async (userId: string) => {
