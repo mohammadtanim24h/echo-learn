@@ -22,7 +22,7 @@ export async function createCompanion(formData: CreateCompanion) {
   }
 
   // ADD: Revalidate companions cache
-  revalidateTag('companions', 'force-no-cache')
+  revalidateTag('companions')
 
   return data
 }
@@ -43,7 +43,7 @@ export async function addToSessionHistory(companionId: string) {
   }
 
   // ADD: Revalidate sessions cache
-  revalidateTag('sessions', 'force-no-cache')
+  revalidateTag('sessions')
 
   return data
 }
