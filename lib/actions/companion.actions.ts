@@ -4,7 +4,7 @@
 import { CreateCompanion } from '@/types'
 import { auth } from '@clerk/nextjs/server'
 import { createServerSupabaseClient } from '../supabase/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 
 // KEEP: Mutation for creating companions
 export async function createCompanion(formData: CreateCompanion) {
@@ -22,7 +22,7 @@ export async function createCompanion(formData: CreateCompanion) {
   }
 
   // ADD: Revalidate companions cache
-  revalidateTag('companions')
+  revalidatePath('/companions')
 
   return data
 }
@@ -43,7 +43,7 @@ export async function addToSessionHistory(companionId: string) {
   }
 
   // ADD: Revalidate sessions cache
-  revalidateTag('sessions')
+  revalidatePath('/my-journey')
 
   return data
 }
