@@ -1,15 +1,15 @@
 import CompanionCard from "@/components/CompanionCard";
 import CompanionList from "@/components/CompanionList";
 import CTA from "@/components/CTA";
-import {
-    getAllCompanions,
-    getRecentSessions,
-} from "@/lib/actions/companion.actions";
+import { getCompanionsCached, getRecentSessionsCached } from "@/lib/supabase/queries";
 import { getSubjectColor } from "@/lib/utils";
 
 const Page = async () => {
-    const companions = await getAllCompanions({ limit: 3 });
-    const recentSessions = await getRecentSessions(10);
+    // Use parallel queries to eliminate waterfall
+    const [companions, recentSessions] = await Promise.all([
+        getCompanionsCached({ limit: 3, page: 1 }),
+        getRecentSessionsCached(10)
+    ]);
 
     return (
         <main>
