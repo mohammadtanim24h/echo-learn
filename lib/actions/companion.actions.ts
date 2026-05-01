@@ -1,158 +1,87 @@
-"use server";
+// lib/actions/companion.actions.ts
+'use server'
 
-import { CreateCompanion, GetAllCompanions } from "@/types";
-import { auth } from "@clerk/nextjs/server";
-import { createClient } from "../supabase";
+import { CreateCompanion } from '@/types'
+import { auth } from '@clerk/nextjs/server'
+import { createServerSupabaseClient } from '../supabase/server'
+import { revalidateTag } from 'next/cache'
 
-export const createCompanion = async (formData: CreateCompanion) => {
-    const { userId: author } = await auth();
-    const supabase = createClient();
+// KEEP: Mutation for creating companions
+export async function createCompanion(formData: CreateCompanion) {
+  const { userId: author } = await auth()
+  const supabase = await createServerSupabaseClient()
 
-    const { data, error } = await supabase
-        .from("companions")
-        .insert({ ...formData, author })
-        .select();
+  const { data, error } = await supabase
+    .from('companions')
+    .insert({ ...formData, author })
+    .select()
+    .single()
 
-    if (error || !data)
-        throw new Error(error?.message || "Failed to create companion");
-    return data[0];
-};
+  if (error || !data) {
+    throw new Error(error?.message || 'Failed to create companion')
+  }
 
-export const getAllCompanions = async ({
-    limit = 10,
-    page = 1,
-    subject,
-    topic,
-}: GetAllCompanions) => {
-    const supabase = createClient();
-    let query = supabase.from("companions").select();
-    if (subject && topic) {
-        query = query
-            .ilike("subject", `%${subject}%`)
-            .or(`topic.ilike.%${topic}%,name.ilike.%${topic}%`);
-    } else if (subject) {
-        query = query.ilike("subject", `%${subject}%`);
-    } else if (topic) {
-        query = query.or(`topic.ilike.%${topic}%,name.ilike.%${topic}%`);
-    }
+  // ADD: Revalidate companions cache
+  revalidateTag('companions', 'force-no-cache')
 
-    query = query.range((page - 1) * limit, page * limit - 1);
+  return data
+}
 
-    const { data: companions, error } = await query;
-    if (error) throw new Error(error.message || "Failed to fetch companions");
+// KEEP: Mutation for adding to session history
+export async function addToSessionHistory(companionId: string) {
+  const { userId } = await auth()
+  const supabase = await createServerSupabaseClient()
 
-    return companions;
-};
+  const { data, error } = await supabase
+    .from('session_history')
+    .insert({ companion_id: companionId, user_id: userId })
+    .select()
+    .single()
 
-export const getCompanion = async (id: string) => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-        .from("companions")
-        .select()
-        .eq("id", id);
+  if (error) {
+    throw new Error(error.message || 'Failed to insert session history')
+  }
 
-    if (error || !data)
-        throw new Error(error?.message || "Companion not found");
+  // ADD: Revalidate sessions cache
+  revalidateTag('sessions', 'force-no-cache')
 
-    return data[0];
-};
+  return data
+}
 
-export const addToSessionHistory = async (companionId: string) => {
-    const { userId } = await auth();
-    const supabase = createClient();
-    const { data, error } = await supabase
-        .from("session_history")
-        .insert({ companion_id: companionId, user_id: userId });
+// KEEP: Permission check for new companion creation
+export async function newCompanionPermissions() {
+  const { userId, has } = await auth()
+  const supabase = await createServerSupabaseClient()
 
-    if (error)
-        throw new Error(error.message || "Failed to insert session history");
+  let limit = 0
+  if (has({ plan: 'pro' })) {
+    return true
+  } else if (has({ feature: '3_active_companions' })) {
+    limit = 3
+  } else if (has({ feature: '10_active_companions' })) {
+    limit = 10
+  }
 
-    return data;
-};
+  const { data, error } = await supabase
+    .from('companions')
+    .select('id', { count: 'exact', head: false })
+    .eq('author', userId)
 
-export const getRecentSessions = async (limit: number = 10) => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-        .from("session_history")
-        .select(`companion_id,companions:companion_id(*)`)
-        .order("created_at", { ascending: false })
-        .limit(limit);
+  if (error) {
+    throw new Error(
+      error.message || 'Failed to get companion count for user'
+    )
+  }
 
-    if (error)
-        throw new Error(error.message || "Failed to fetch recent sessions");
+  const companionCount = data?.length || 0
+  if (companionCount >= limit) {
+    return false
+  }
+  return true
+}
 
-    const uniqueCompanions = new Map();
-    for (const { companion_id, companions } of data) {
-        if (companions && !uniqueCompanions.has(companion_id)) {
-            uniqueCompanions.set(companion_id, companions);
-        }
-    }
-
-    return Array.from(uniqueCompanions.values());
-};
-
-export const getUserSessions = async (userId: string, limit: number = 10) => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-        .from("session_history")
-        .select(`companion_id,companions:companion_id(*)`)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(limit);
-
-    if (error)
-        throw new Error(error.message || "Failed to fetch recent sessions");
-
-    const uniqueCompanions = new Map();
-    for (const { companion_id, companions } of data) {
-        if (companions && !uniqueCompanions.has(companion_id)) {
-            uniqueCompanions.set(companion_id, companions);
-        }
-    }
-
-    return Array.from(uniqueCompanions.values());
-};
-
-export const getUserCompanions = async (userId: string) => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-        .from("companions")
-        .select()
-        .eq("author", userId);
-
-    if (error)
-        throw new Error(error.message || "Failed to fetch user companions");
-
-    return data;
-};
-
-export const newCompanionPermissions = async () => {
-    const { userId, has } = await auth();
-    const supabase = createClient();
-
-    let limit = 0;
-    if (has({ plan: "pro" })) {
-        return true;
-    } else if (has({ feature: "3_active_companions" })) {
-        limit = 3;
-    } else if (has({ feature: "10_active_companions" })) {
-        limit = 10;
-    }
-
-    const { data, error } = await supabase
-        .from("companions")
-        .select("id", { count: "exact" })
-        .eq("author", userId);
-
-    if (error)
-        throw new Error(
-            error.message || "Failed to get companion count for user",
-        );
-
-    const companionCount = data?.length;
-    if (companionCount >= limit) {
-        return false;
-    } else {
-        return true;
-    }
-};
+// REMOVE: getAllCompanions (now in queries.ts)
+// REMOVE: getCompanion (now in queries.ts)
+// REMOVE: getRecentSessions (now in queries.ts)
+// REMOVE: getUserSessions (now handled by API route + React Query)
+// REMOVE: getUserCompanions (now handled by API route + React Query)
