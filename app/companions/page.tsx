@@ -1,7 +1,7 @@
 import CompanionCard from "@/components/CompanionCard";
 import SearchInput from "@/components/SearchInput";
 import SubjectFilter from "@/components/SubjectFilter";
-import { getAllCompanions } from "@/lib/actions/companion.actions";
+import { getCompanionsCached } from "@/lib/supabase/queries";
 import { getSubjectColor } from "@/lib/utils";
 import { SearchParams } from "@/types";
 
@@ -12,7 +12,12 @@ export default async function CompanionsLibrary({
     const subject = filters.subject ? filters.subject : "";
     const topic = filters.topic ? filters.topic : "";
 
-    const companions = await getAllCompanions({ subject, topic });
+    const companions = await getCompanionsCached({
+        subject,
+        topic,
+        page: 1,
+        limit: 50, // Adjust based on needs
+    });
 
     return (
         <main>
