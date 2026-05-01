@@ -1,5 +1,4 @@
 // lib/api/companions.ts
-import { CreateCompanion } from '@/types'
 
 // Client-side fetch function for user sessions
 export async function fetchUserSessions(userId: string, limit: number = 10) {
