@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -28,8 +29,10 @@ export default function RootLayout({
                 <ClerkProvider
                     appearance={{ variables: { colorPrimary: "#fe5933" } }}
                 >
-                    <Navbar />
-                    {children}
+                    <Providers>
+                        <Navbar />
+                        {children}
+                    </Providers>
                 </ClerkProvider>
             </body>
         </html>
