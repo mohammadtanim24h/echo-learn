@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)",
+      "Bash(npm run *)",
+      "Bash(npx next *)",
+      "Bash(git show *)",
+      "Bash(npx eslint *)",
+      "Bash(xargs grep *)"
+    ]
+  }
+}
