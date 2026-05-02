@@ -19,7 +19,11 @@ const navItems = [
     },
 ];
 
-export default function Navitems() {
+interface NavitemsProps {
+    setIsOpen?: (open: boolean) => void;
+}
+
+export default function Navitems({ setIsOpen }: NavitemsProps) {
     const pathname = usePathname();
     return (
         <>
@@ -27,6 +31,7 @@ export default function Navitems() {
                 <li key={label}>
                     <Link
                         href={href}
+                        onClick={() => setIsOpen?.(false)}
                         className={cn(
                             pathname === href && "text-primary font-semibold",
                         )}
