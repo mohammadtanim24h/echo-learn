@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import soundwaves from "@/constants/soundwaves.json";
 import { SavedMessage } from "@/types";
 import { addToSessionHistory } from "@/lib/actions/companion.actions";
+import { useQueryClient } from "@tanstack/react-query";
 
 enum CallStatus {
     INACTIVE = "INACTIVE",
@@ -37,6 +38,7 @@ export default function Companion({
     userName,
     userImage,
 }: CompanionProps) {
+    const queryClient = useQueryClient();
     const [callStatus, setCallStatus] = useState<CallStatus>(
         CallStatus.INACTIVE,
     );
@@ -58,9 +60,10 @@ export default function Companion({
     useEffect(() => {
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
 
-        const onCallEnd = () => {
+        const onCallEnd = async () => {
             setCallStatus(CallStatus.FINISHED);
-            addToSessionHistory(id);
+            await addToSessionHistory(id);
+            queryClient.invalidateQueries({ queryKey: ['user-sessions'] });
         };
 
         const onMessage = (message: Message) => {

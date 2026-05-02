@@ -42,9 +42,6 @@ export async function addToSessionHistory(companionId: string) {
     throw new Error(error.message || 'Failed to insert session history')
   }
 
-  // ADD: Revalidate sessions cache
-  revalidatePath('/my-journey')
-
   return data
 }
 

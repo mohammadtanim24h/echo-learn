@@ -31,6 +31,7 @@ import {
 import { subjects } from "@/constants";
 import { createCompanion } from "@/lib/actions/companion.actions";
 import { redirect } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
     name: z.string().min(1, "Companion name is required."),
@@ -42,6 +43,7 @@ const formSchema = z.object({
 });
 
 export default function CompanionForm() {
+    const queryClient = useQueryClient();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -57,6 +59,7 @@ export default function CompanionForm() {
     async function onSubmit(data: z.infer<typeof formSchema>) {
         const companion = await createCompanion(data);
         if (companion) {
+            queryClient.invalidateQueries({ queryKey: ['user-companions'] });
             redirect(`/companions/${companion.id}`);
         } else {
             console.log("Failed to create companion");

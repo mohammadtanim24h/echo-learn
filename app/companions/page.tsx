@@ -28,7 +28,7 @@ export default async function CompanionsLibrary({
                     <SubjectFilter />
                 </div>
             </section>
-            <section className="companions-grid">
+            <section className="companions-grid mb-6">
                 {companions.map((companion) => (
                     <CompanionCard
                         key={companion.id}
