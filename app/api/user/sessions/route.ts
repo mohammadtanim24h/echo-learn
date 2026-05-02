@@ -1,20 +1,21 @@
 // app/api/user/sessions/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createServerSupabaseClientWithAuth } from '@/lib/supabase/server-client'
 import { auth } from '@clerk/nextjs/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, limit = 10 } = await request.json()
+    const { userId } = await auth()
+    const { limit = 10 } = await request.json()
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'User ID required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       )
     }
 
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createServerSupabaseClientWithAuth()
 
     const { data, error } = await supabase
       .from('session_history')

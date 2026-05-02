@@ -3,13 +3,13 @@
 
 import { CreateCompanion } from '@/types'
 import { auth } from '@clerk/nextjs/server'
-import { createServerSupabaseClient } from '../supabase/server'
+import { createServerSupabaseClientWithAuth } from '../supabase/server-client'
 import { revalidatePath } from 'next/cache'
 
 // KEEP: Mutation for creating companions
 export async function createCompanion(formData: CreateCompanion) {
   const { userId: author } = await auth()
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createServerSupabaseClientWithAuth()
 
   const { data, error } = await supabase
     .from('companions')
@@ -30,7 +30,7 @@ export async function createCompanion(formData: CreateCompanion) {
 // KEEP: Mutation for adding to session history
 export async function addToSessionHistory(companionId: string) {
   const { userId } = await auth()
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createServerSupabaseClientWithAuth()
 
   const { data, error } = await supabase
     .from('session_history')
@@ -51,7 +51,7 @@ export async function addToSessionHistory(companionId: string) {
 // KEEP: Permission check for new companion creation
 export async function newCompanionPermissions() {
   const { userId, has } = await auth()
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createServerSupabaseClientWithAuth()
 
   let limit = 0
   if (has({ plan: 'pro' })) {
