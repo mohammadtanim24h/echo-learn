@@ -29,8 +29,8 @@ export async function getCompanionsCached(filters: GetAllCompanions) {
 
   // Build cache tags based on filters for granular invalidation
   const cacheTags = ['companions']
-  if (filters.subject) cacheTags.push(`subject-${filters.subject}`)
-  if (filters.topic) cacheTags.push(`topic-${filters.topic}`)
+  if (filters.subject && filters.subject !== '') cacheTags.push(`subject-${filters.subject}`)
+  if (filters.topic && filters.topic !== '') cacheTags.push(`topic-${filters.topic}`)
 
   const supabase = createCompanionsClient(cacheTags)
   let query = supabase.from('companions').select()

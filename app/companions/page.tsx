@@ -9,14 +9,15 @@ export default async function CompanionsLibrary({
     searchParams,
 }: SearchParams) {
     const filters = await searchParams;
-    const subject = filters.subject ? filters.subject : "";
-    const topic = filters.topic ? filters.topic : "";
+    // Only include non-empty filters to avoid creating unique cache entries
+    const subject = filters.subject || undefined;
+    const topic = filters.topic || undefined;
 
     const companions = await getCompanionsCached({
         subject,
         topic,
         page: 1,
-        limit: 50, // Adjust based on needs
+        limit: 50,
     });
 
     return (
